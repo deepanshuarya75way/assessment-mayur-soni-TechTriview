@@ -48,6 +48,9 @@ function InterviewScheduleUI() {
     interviewerIds: user?.id ? [user.id] : [],
   });
 
+  //********* Updated function for task completion **************/
+  // I kept the debugging comments for review.
+
   const scheduleMeeting = async () => {
     if (!client || !user) return;
     if (!formData.candidateId || formData.interviewerIds.length === 0) {
@@ -74,15 +77,15 @@ function InterviewScheduleUI() {
 
 
     // --- START DEBUGGING BLOCK ---
-    console.log("--- START INTERVIEWER CONFLICT CHECK ---");
-    console.log("Form Selected Date:", new Date(formData.date).toDateString());
-    console.log("Form Selected Time:", `${selectedHours}:${selectedMinutes}`);
-    console.log("Form Selected Interviewer IDs:", formData.interviewerIds);
+    // console.log("--- START INTERVIEWER CONFLICT CHECK ---");
+    // console.log("Form Selected Date:", new Date(formData.date).toDateString());
+    // console.log("Form Selected Time:", `${selectedHours}:${selectedMinutes}`);
+    // console.log("Form Selected Interviewer IDs:", formData.interviewerIds);
 
     const busyInterviewers = interviews
-  .filter((interview) => {
-    const existingDate = new Date(interview.startTime);
-    const selectedDate = new Date(formData.date);
+    .filter((interview) => {
+      const existingDate = new Date(interview.startTime);
+      const selectedDate = new Date(formData.date);
 
     const sameTime =
       existingDate.toDateString() === selectedDate.toDateString() &&
@@ -100,29 +103,27 @@ function InterviewScheduleUI() {
 
     const busyInterviewerNames = interviewers
   .filter((user) => {
-    // Check your Convex schema for what you named the Clerk/Auth ID field 
-    // It's commonly user.clerkId, user.userId, or user.externalId
     const authId = user.clerkId || user._id; 
     return busyInterviewers.includes(authId);
   })
   .map((user) => user.name);
 
-console.log("Final Busy Interviewer Names Array:", busyInterviewerNames);
-console.log("--- END INTERVIEWER CONFLICT CHECK ---");
-// --- END DEBUGGING BLOCK ---
 
-    if (existingInterview){
-      return(
-        alert("An interview is already scheduled for this candidate on the given date.")
-      )
+    // console.log("Final Busy Interviewer Names Array:", busyInterviewerNames);
+    // console.log("--- END INTERVIEWER CONFLICT CHECK ---");
+    // --- END DEBUGGING BLOCK ---
+
+    if (existingInterview) {
+      alert("An interview is already scheduled for this candidate on the given date.");
+      return;
     }
 
     if (busyInterviewerNames.length > 0) {
-  alert(
-    `These interviewers already have a scheduled interview at the entered date and time:\n\n${busyInterviewerNames.join(", ")}`
-  );
-  return; 
-}
+      alert(
+        `These interviewers already have a scheduled interview at the entered date and time:\n\n${busyInterviewerNames.join(", ")}`
+      );
+      return; 
+    }
     
     setIsCreating(true);
 
